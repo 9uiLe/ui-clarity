@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="ja"><meta charset="utf-8"><title>配信設定</title>
+<style>body{font:16px sans-serif}button{padding:8px}</style>
+<h1 data-i18n="heading">配信設定</h1>
+<p id="condition" data-i18n="condition">開始24時間前まではキャンセルOK。ただし承認待ちは取り消せません。</p>
+<p data-i18n="duration">必ず5分以内に終わります</p>
+<p id="status" role="status" data-i18n="status">配信しました</p>
+<label for="target">配信先</label><select id="target" name="destination" aria-describedby="condition"><option value="dst-east">国内営業の標準</option><option value="dst-west-2026-q4-archive-000000000001">海外営業の標準</option></select>
+<button id="next" data-i18n="action" aria-label="配信しました" onclick="showConfirm()">実行</button>
+<button id="save" data-i18n="action" onclick="saveDraft()">実行</button>
+<button id="confirm" data-i18n="confirm" aria-label="送信を実行" onclick="send()">OK</button>
+<p data-i18n="timeout">保存されていません。安全にもう一度送信してください。</p>
+<a href="/history?destination=dst-east">配信履歴</a>
+<button onclick="closePanel()">×</button>
+<script>
+const messages = {
+  heading: '配信設定',
+  condition: '開始24時間前まではキャンセルOK。ただし承認待ちは取り消せません。',
+  duration: '必ず5分以内に終わります',
+  status: '配信しました',
+  action: '実行',
+  confirm: 'OK',
+  timeout: '保存されていません。安全にもう一度送信してください。',
+  selected: '{projectName} の {roomName} に {count} 件を配信',
+  legacy: '%1$s に約 %2$d 件を配信',
+  pending: '{count, plural, =0 {配信はありません} one {# 件が承認待ちです} other {# 件が承認待ちです}}'
+};
+function showConfirm(){document.querySelector('#status').textContent='確認画面です'}
+function saveDraft(){document.querySelector('#status').textContent='下書きを保存しました'}
+function send(){document.querySelector('#status').textContent='配信を試行しています'}
+function closePanel(){}
+</script>
+</html>

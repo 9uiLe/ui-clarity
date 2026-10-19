@@ -1,0 +1,7 @@
+# Moletta のローカル作業記録
+/.moletta-runs/
+
+# Python のローカル検証環境
+/.venv/
+__pycache__/
+*.py[cod]
