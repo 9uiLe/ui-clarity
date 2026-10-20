@@ -21,6 +21,25 @@ CIでは配布物の単一入口、frontmatter、相対リンク、参照解決�
 
 これらは、モデルの文言・情報設計の品質や意味保持の自動評価ではない。意図的な問題を含む `fixtures/*.html` を完成画面として合否判定しない。スキルの実質的な変更では、以下の該当する依頼による行動検証を別途行う。
 
+## pre-commitのサイズ検査
+
+有効化は[README](../README.md#開発時のコミット検査)を参照。hookはPython 3の標準ライブラリとGitだけで動きます。既存の単体テスト実行コマンドで、hookの行動テストも実行されます。
+
+検査対象はindexで追加・変更・改名などがステージされた通常ファイルです。差分の行数ではなく、ステージされたファイル全体のblobサイズを使い、20,000バイトを超えると拒否します。ちょうど20,000バイトは許可します。未追跡・未ステージ・変更のない追跡ファイル、削除、シンボリックリンク、submoduleは検査対象にしません。検査はファイルやindexを変更しません。
+
+Gitの履歴やファイルの内容から作者を確実に判定できないため、通常のファイルは既定で対象にします。lockfileはhook内の名前一覧（例：`package-lock.json`、`pnpm-lock.yaml`、`uv.lock`、`Cargo.lock`）で除外します。手書きのJSONや`requirements.txt`を拡張子だけで除外することはありません。作者や生成元が既知のファイルは、必要に応じて`.gitattributes`へ明示します。
+
+```gitattributes
+generated/** linguist-generated=true
+vendor/** linguist-vendored=true
+docs/human-maintained.md agent-authored=false
+generated/hand-written-wrapper.py agent-authored=true
+```
+
+これは指定方法の例です。このリポジトリには除外設定を追加していません。`agent-authored`のfalse／unset（`-agent-authored`も同じ）は対象外、true／set（値のない`agent-authored`も同じ）は強制検査です。強制検査はlockfileや生成物の除外より優先します。それ以外は、`linguist-generated`／`linguist-vendored`がtrue／setなら除外します。不明な値は除外の根拠にしません。生成物らしい名前・ディレクトリ・コメントだけでは自動判定しません。
+
+`.gitattributes`はステージされた版を使い、Git標準のローカル属性（`.git/info/attributes`）やグローバル属性も反映します（[Gitの`--cached`仕様](https://git-scm.com/docs/git-check-attr)）。共有する除外指定は`.gitattributes`へ書き、そのファイルも`git add`してください。超過エラーの後は、コードを責務別のモジュール、テストを機能別、長い文書を見出し単位の参照資料へ分け、import・リンクと動作を確認して再ステージします。作業中のファイルを短くするだけではindexは更新されません。
+
 ## 再実行
 
 1. 隔離したローカル作業場所を4つ用意し、それぞれに `fixtures/source.md` を置く。レビュー用には `review.html`、文言用には `copy-only.html` も置く。元フィクスチャは編集しない。

@@ -1,0 +1,137 @@
+#!/usr/bin/env python3
+"""Reject changed, staged authored files above 5,000 tokens (bytes / 4)."""
+
+import os
+from pathlib import Path
+import subprocess
+import sys
+
+
+MAX_BYTES = 20_000
+LOCKFILES = {
+    "package-lock.json", "npm-shrinkwrap.json", "yarn.lock", "pnpm-lock.yaml",
+    "bun.lock", "bun.lockb", "Pipfile.lock", "poetry.lock", "uv.lock", "pdm.lock",
+    "Cargo.lock", "Gemfile.lock", "composer.lock", "go.sum", "packages.lock.json",
+    "Package.resolved", "pubspec.lock", "flake.lock", "deno.lock", "mix.lock",
+}
+ATTRIBUTES = ("agent-authored", "linguist-generated", "linguist-vendored")
+TRUE = {"set", "true"}
+FALSE = {"unset", "false"}
+
+
+def git(root, *args, data=None):
+    result = subprocess.run(
+        ["git", "-C", str(root), *args], input=data, capture_output=True,
+    )
+    if result.returncode:
+        detail = result.stderr.decode("utf-8", errors="replace").strip()
+        raise RuntimeError(detail or "Git could not inspect the index.")
+    return result.stdout
+
+
+def staged_entries(root):
+    changed = {
+        os.fsdecode(name) for name in git(
+            root, "diff", "--cached", "--name-only", "--no-renames",
+            "--no-ext-diff", "--no-textconv", "--diff-filter=ACMRT", "-z",
+        ).split(b"\0") if name
+    }
+    if not changed:
+        return {}
+    entries = {}
+    for record in git(root, "ls-files", "--stage", "-z").split(b"\0"):
+        if not record:
+            continue
+        metadata, name = record.split(b"\t", 1)
+        mode, oid, stage = metadata.split()
+        name = os.fsdecode(name)
+        if name in changed and stage == b"0" and mode in {b"100644", b"100755"}:
+            entries[name] = oid
+    return entries
+
+
+def indexed_attributes(root, paths):
+    data = b"".join(os.fsencode(name) + b"\0" for name in paths)
+    fields = git(
+        root, "check-attr", "--cached", "-z", "--stdin", *ATTRIBUTES, data=data,
+    ).split(b"\0")
+    if fields[-1] == b"":
+        fields.pop()
+    if len(fields) != len(paths) * len(ATTRIBUTES) * 3:
+        raise RuntimeError("Git did not return attributes for every staged file.")
+    attributes = {name: {} for name in paths}
+    for index in range(0, len(fields), 3):
+        name, attribute, value = (os.fsdecode(v) for v in fields[index:index + 3])
+        attributes[name][attribute] = value
+    return attributes
+
+
+def exempt(name, attributes):
+    authored = attributes["agent-authored"]
+    if authored in TRUE:
+        return False
+    if authored in FALSE:
+        return True
+    return (
+        name.rsplit("/", 1)[-1] in LOCKFILES
+        or attributes["linguist-generated"] in TRUE
+        or attributes["linguist-vendored"] in TRUE
+    )
+
+
+def blob_sizes(root, oids):
+    objects = list(dict.fromkeys(oids))
+    lines = git(
+        root, "cat-file", "--batch-check=%(objectname) %(objecttype) %(objectsize)",
+        data=b"\n".join(objects) + b"\n",
+    ).splitlines()
+    if len(lines) != len(objects):
+        raise RuntimeError("Git did not return every staged blob size.")
+    sizes = {}
+    for oid, line in zip(objects, lines):
+        fields = line.split()
+        if len(fields) != 3 or fields[0] != oid or fields[1] != b"blob":
+            raise RuntimeError("A staged file could not be read from the object database.")
+        sizes[oid] = int(fields[2])
+    return sizes
+
+
+def main():
+    try:
+        root = Path(os.fsdecode(git(Path.cwd(), "rev-parse", "--show-toplevel")[:-1]))
+        entries = staged_entries(root)
+        if not entries:
+            return 0
+        attributes = indexed_attributes(root, entries)
+        checked = {
+            name: oid for name, oid in entries.items()
+            if not exempt(name, attributes[name])
+        }
+        if not checked:
+            return 0
+        sizes = blob_sizes(root, checked.values())
+        violations = [(name, sizes[oid]) for name, oid in checked.items() if sizes[oid] > MAX_BYTES]
+    except (OSError, RuntimeError, ValueError) as error:
+        print(f"pre-commit: token check could not inspect staged files: {error}", file=sys.stderr)
+        return 2
+
+    if not violations:
+        return 0
+    print("pre-commit: staged files exceed 5,000 tokens (20,000 bytes; tokens = bytes / 4):", file=sys.stderr)
+    for name, size in sorted(violations):
+        print(f"  {name!r}: {size:,} bytes = {size / 4:,.2f} tokens", file=sys.stderr)
+    print(
+        "\nSplit each file into meaningful files of at most 20,000 bytes:\n"
+        "  1. Code: move complete functions/classes into modules by responsibility; update imports.\n"
+        "  2. Tests: split by feature/behavior; put reusable fixtures in shared fixture files.\n"
+        "  3. Markdown: move complete heading sections into linked documents/references; keep an index.\n"
+        "  4. Preserve the content and behavior, update links, then run the relevant tests.\n"
+        "  5. Re-stage every changed/new file with git add -- <paths>, then retry git commit.\n"
+        "The check reads staged blobs; editing the working copy alone does not update the staged size.",
+        file=sys.stderr,
+    )
+    return 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())

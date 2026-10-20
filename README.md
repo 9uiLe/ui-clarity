@@ -131,6 +131,16 @@ READMEやコードコメントの改善、表示文言だけの編集にも使�
 
 [`tests/README.md`](tests/README.md) に架空題材での再実行手順、[`tests/RESULTS.md`](tests/RESULTS.md) に実施結果と未確認事項を記録しています。
 
+## 開発時のコミット検査
+
+このリポジトリを編集する人は、Python 3が利用できる環境で、ルートから次を1回実行します。スキルを導入して使うだけなら設定は不要です。既存のhookや`core.hooksPath`を設定済みの場合は、既存の検査を維持するように統合してください。
+
+```sh
+git config --local core.hooksPath .githooks
+```
+
+[pre-commit hook](.githooks/pre-commit) は、変更をステージした通常ファイルについて、コミットされる版が5,000トークン（バイト数÷4、20,000バイト）を超えるとコミットを拒否します。lockfileと明示した生成物等は除外し、超過時にはファイルの分割と再ステージの方法を表示します。判定範囲・除外の指定は[テスト手順](tests/README.md#pre-commitのサイズ検査)を参照してください。hookの有効化はcloneごとに必要です（[Git公式資料](https://git-scm.com/docs/githooks)）。
+
 ## GitHub での更新と CI
 
 公開リポジトリの既定ブランチは `master` とし、所有者が直接pushします。PR・Issue・Wiki・Projectは使いません。第三者へ書き込み権限を付与しません。公開物の閲覧・複製・フォークは可能です。
