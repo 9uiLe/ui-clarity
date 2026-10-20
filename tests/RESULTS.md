@@ -35,3 +35,15 @@ macOSで47テストが成功した。うち17件は一時Gitリポジトリでho
 配布構成の検査は31ファイルで成功。実際のindexを変更せず、一時indexへ全変更を登録したhook検査と、差分の空白検査も成功した。既存の有効なhookや`core.hooksPath`設定がないことを確認したうえで、このcloneのローカル設定を`.githooks`へ向け、`git hook run pre-commit`の実行を確認した。
 
 **未実施**：今回の変更によるGitHub CI、Linux・Windowsでの実行。スキル本文とフィクスチャは変更しておらず、生成試験は再実行していない。コミット・pushは行っていない。
+
+## 2026-10-20：pnpm経由のVercel Skills CLI
+
+導入・更新を、`pnpm dlx skills add`へ統一した。スキル名、個人用の範囲、Codex・Claude Codeの両対象を明示し、初回も更新も同じ1行を使う。独自の導入処理とその専用テストは配布しない。CLIは同名の配置を置換するため、手編集がある場合の退避をREADMEへ記載した。スキル本文・参照資料・既存テスト・CIワークフローは変更していない。
+
+pnpm 10.4.1・Node.js 25.2.1・Skills CLI 1.7.4で確認した。公式の[コマンド仕様](https://github.com/vercel-labs/skills/blob/main/docs/commands.md#skills-add)と公開版のソースを照合し、CLIのhelp・versionと、`--list`で公開リポジトリの`ui-clarity`が1件検出されることを確認した。1.7.4の`update`は元のagent指定を引き継がないため、更新も明示した`add`を再実行する。`check`は説明と異なり[更新処理へ分岐する実装](https://github.com/vercel-labs/skills/blob/a80e4c9d12d607631249d4d7d059f835d4b2f13a/src/cli.ts#L420-L423)だったため、確認専用として案内していない。
+
+実際の導入試験では`--global`を外し、プロジェクト外の一時ディレクトリへCLIを実行した。初回の全4ファイルが配布物と一致し、Claude Codeのリンクとプロジェクト用lockfileを確認した。一時コピーへ加えた手編集と余剰ファイルは、同じコマンドによる再導入で置換された。実行前後で個人用ui-clarityとグローバルlockfileが変わらないことを確認し、`HOME`・`CODEX_HOME`は変更していない。pnpmの実行用パッケージキャッシュは通常どおり使用した。
+
+既存47テストと31ファイルの配布構成検査が成功した。別の実行者による公式仕様と文書の照合でも、重大な問題は見つからなかった。
+
+**未実施**：実際の個人用配置先への導入、ツール内の認識、GitHub CI、Linux・Windowsでの実行。コミット・pushは行っていない。

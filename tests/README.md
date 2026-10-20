@@ -21,6 +21,16 @@ CIでは配布物の単一入口、frontmatter、相対リンク、参照解決�
 
 これらは、モデルの文言・情報設計の品質や意味保持の自動評価ではない。意図的な問題を含む `fixtures/*.html` を完成画面として合否判定しない。スキルの実質的な変更では、以下の該当する依頼による行動検証を別途行う。
 
+## 導入コマンドの確認
+
+READMEの導入・更新はVercel Skills CLIへ委ねます。CLIの変更時は公式仕様を照合し、公開リポジトリの`ui-clarity`検出と、プロジェクト外の一時ディレクトリへの導入・再導入を確認します。個人用配置先を変更しないため、試験では`--global`を外し、作業場所をその一時ディレクトリへ限定します。
+
+```sh
+DISABLE_TELEMETRY=1 pnpm dlx skills add 9uiLe/ui-clarity --skill ui-clarity --agent codex claude-code --yes
+```
+
+スキル本文・参照資料の一致と、Claude Code側のリンク先を確認します。`HOME`・`CODEX_HOME`は変更しません。実際の個人用導入・ツール内の認識・GitHub CIとは区別して結果へ記録します。これは外部CLIとの導入互換性の確認であり、CIにネットワーク依存の導入試験を追加するものではありません。
+
 ## pre-commitのサイズ検査
 
 有効化は[README](../README.md#開発時のコミット検査)を参照。hookはPython 3の標準ライブラリとGitだけで動きます。既存の単体テスト実行コマンドで、hookの行動テストも実行されます。
