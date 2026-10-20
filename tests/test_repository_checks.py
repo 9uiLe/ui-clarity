@@ -8,7 +8,7 @@ import tempfile
 import unittest
 
 
-CHECKER = Path(__file__).resolve().parents[1] / "scripts/check_repository.py"
+CHECKER = Path(__file__).resolve().with_name("check_repository.py")
 SKILL = "skills/ui-clarity"
 VALID_SKILL = "---\nname: ui-clarity\ndescription: A small example skill.\n---\n\n[Reference](references/guide.md)\n"
 

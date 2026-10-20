@@ -44,7 +44,7 @@ class WorkflowPolicyTests(unittest.TestCase):
         commands = {step.get('run'): step for step in job['steps'] if 'run' in step}
         for command in (
             "python -m unittest discover -s tests -p 'test_*.py' -v",
-            'python scripts/check_repository.py',
+            'python tests/check_repository.py',
         ):
             self.assertIn(command, commands)
             self.assertNotIn('if', commands[command])

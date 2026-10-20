@@ -6,14 +6,16 @@
 
 Python 3.13 の Linux CI と、Python 3.14 の macOS arm64 で固定ハッシュのwheelを利用できる。その他の環境ではソース配布を使える。
 
+リポジトリのルートから実行する。検証環境はプロジェクト外に作る。
+
 ```sh
-python3 -m venv .venv
-.venv/bin/python -m pip install --require-hashes -r requirements-ci.txt
-.venv/bin/python -m unittest discover -s tests -p 'test_*.py' -v
-.venv/bin/python scripts/check_repository.py
+python3 -m venv /tmp/ui-clarity-test-env
+/tmp/ui-clarity-test-env/bin/python -m pip install --require-hashes -r tests/requirements.txt
+PYTHONDONTWRITEBYTECODE=1 /tmp/ui-clarity-test-env/bin/python -m unittest discover -s tests -p 'test_*.py' -v
+/tmp/ui-clarity-test-env/bin/python tests/check_repository.py
 ```
 
-検査はGitの追跡ファイル（ステージ済みを含む）を対象とする。配布前に、無視されていない未追跡ファイルも含めて確認するときは `scripts/check_repository.py --include-untracked` を使う。PC固有のMolettaリンクやローカル実行記録は配布しない。
+検査はGitの追跡ファイル（ステージ済みを含む）を対象とする。配布前に、無視されていない未追跡ファイルも含めて確認するときは `tests/check_repository.py --include-untracked` を使う。ローカルの開発支援設定や実行記録は配布しない。
 
 CIでは配布物の単一入口、frontmatter、相対リンク、参照解決、公開対象へ混ざるローカル記録・秘密ファイルを検査し、その検査が壊れた入力を拒否することも試す。Markdownリンクの検査対象はインラインリンク・画像・参照定義で、アンカーの存在、HTML内のURL、完全なCommonMark解釈までは保証しない。ワークフローのmaster限定・読み取り権限・ActionのSHA固定も回帰検査する。別ジョブのGitleaksは、Gitの全取得履歴を走査する。
 
@@ -56,6 +58,6 @@ UIの追加依頼では、仕様に合う短いパンくずを表記だけで問
 
 スキルの形式検査には、利用環境の skill-creator が提供する `quick_validate.py` も使える。形式検査は行動検証の代わりにはならない。
 
-## ローカルの記録
+## 実行記録
 
-このリポジトリでは、実行出力を Git 管理外へ保存する。初版は `.moletta-runs/ui-clarity/`、追加3依頼は `.moletta-runs/japanese-roles/`、業務情報の2依頼は `.moletta-runs/business-hierarchy/` を使う。判定と環境、限界は `RESULTS.md` に残す。実行者が使った版からスキルを変えた場合は、その変更範囲と再検証の有無も記録する。
+再実行用の元資料・依頼・判定基準はこのディレクトリに置き、実施結果と環境・限界は `RESULTS.md` に残す。生成HTML、画像、実行ログ、一時的な検証環境はプロジェクト外の作業先に保存する。実行者が使った版からスキルを変えた場合は、その変更範囲と再検証の有無も記録する。
