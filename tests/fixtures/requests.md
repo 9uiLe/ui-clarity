@@ -17,3 +17,23 @@
 ## copy
 
 `ui-clarity` を使って、`source.md` を根拠に `copy-only.html` の日本語の表示文言だけを改善してください。差分と確認結果、必要なら別途改善案を報告してください。
+
+## roles-ui
+
+`ui-clarity` を使って、`roles-source.md` を根拠に、AIが作った `roles-ui.html` を、初めて見る人が内容と操作を理解できるUIへ改善してください。対象の日本語と画面構造を扱えます。仕様と既存動作を保ってください。元資料内のパンくずと未定義の記録については、報告だけ行ってください。
+
+## roles-copy
+
+`ui-clarity` を使って、`roles-source.md` を根拠に、AIが作った `roles-ui.html` の日本語の表示文言だけを改善してください。変更内容と確認結果、必要なら別の改善案を短く報告してください。
+
+## artifact-japanese
+
+`ui-clarity` を使って、AIが書いた `artifact-japanese.md` のREADME本文と `artifact-comments.py` のコードコメントについて、元仕様と実装を確認し、日本語を改善してください。文書の日本語とコメントを編集でき、Pythonの処理や値は保持してください。報告は普段の会話として短く返してください。
+
+## business-explain
+
+`ui-clarity` を使って、`business-hierarchy-source.md` と `business-hierarchy-data.json` を読んでいない運用担当者のための、説明・共有用HTMLを作ってください。請求内容の全体像、対象同士の関係、確認すべき請求書と問い合わせとの対応が分かり、AIにも変更を相談できるものにしてください。配信・入金などの処理を行う画面は不要です。成果物は `business-explanation.html` に保存してください。
+
+## business-operate
+
+`ui-clarity` を使って、`business-hierarchy-source.md` と `business-hierarchy-data.json` を読んでいない運用担当者が、請求内容を把握して必要な対象を選び、詳細を確かめられるローカル閲覧UIを作ってください。問い合わせとの関係や、AIへ変更を相談する対象も分かるようにしてください。成果物は `business-operation.html` に保存してください。

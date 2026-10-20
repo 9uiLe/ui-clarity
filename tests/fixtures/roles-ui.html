@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="ja">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>コンポーネントの確認</title>
+<style>body{font:16px/1.7 sans-serif;max-width:960px;margin:24px auto;padding:0 16px}button,select{font:inherit;max-width:100%}.explanation{border:1px solid #aaa;padding:12px;margin:12px 0}</style>
+<h1>コンポーネントの確認</h1>
+<div class="explanation">A画面 / Bコンポーネント: 成功。A画面のBコンポーネントは成功です。</div>
+<div class="explanation">A画面 / Cコンポーネント: 確認中。A画面のCコンポーネントは確認中です。</div>
+<div class="explanation">D画面 / Bコンポーネント: 成功。D画面のBコンポーネントは成功です。</div>
+<label for="target">A画面 / Bコンポーネント: 成功などの対象</label>
+<select id="target"><option value="a-b">A画面 / Bコンポーネント: 成功</option><option value="a-c">A画面 / Cコンポーネント: 確認中</option><option value="d-b">D画面 / Bコンポーネント: 成功</option></select>
+<button id="open" onclick="showDetails()">A画面 / Bコンポーネント: 成功</button>
+<p id="detail" role="status">対象の詳細はまだ表示していません。</p>
+<script>
+const records = {
+  'a-b': {screen:'A画面',name:'Bコンポーネント',status:'成功'},
+  'a-c': {screen:'A画面',name:'Cコンポーネント',status:'確認中'},
+  'd-b': {screen:'D画面',name:'Bコンポーネント',status:'成功'}
+};
+function showDetails(){
+  const id=document.getElementById('target').value;
+  const r=records[id];
+  document.getElementById('detail').textContent=r.screen+'の'+r.name+'（ID: '+id+'）の状態は'+r.status+'です。';
+}
+</script>
+</html>

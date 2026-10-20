@@ -1,0 +1,27 @@
+{
+  "customers": [
+    {"id": "cust-b", "name": "白樺調査室"},
+    {"id": "cust-a", "name": "青葉研究会"}
+  ],
+  "contracts": [
+    {"id": "ctr-b", "customer_id": "cust-b", "name": "標準", "contract_status": "active"},
+    {"id": "ctr-a", "customer_id": "cust-a", "name": "標準", "contract_status": "active"}
+  ],
+  "invoices": [
+    {"id": "inv-b-07", "contract_id": "ctr-b", "name": "7月分", "payment_status": "z4"},
+    {"id": "inv-a-07", "contract_id": "ctr-a", "name": "7月分", "payment_status": "unpaid"},
+    {"id": "inv-a-06", "contract_id": "ctr-a", "name": "6月分", "payment_status": "paid"}
+  ],
+  "line_items": [
+    {"id": "line-orphan", "invoice_id": null, "name": "基本料金", "amount_yen": 5000},
+    {"id": "line-b-07-extra", "invoice_id": "inv-b-07", "name": "追加利用", "amount_yen": 900},
+    {"id": "line-a-06-base", "invoice_id": "inv-a-06", "name": "基本料金", "amount_yen": 5000},
+    {"id": "line-a-07-extra", "invoice_id": "inv-a-07", "name": "追加利用", "amount_yen": 1800},
+    {"id": "line-b-07-base", "invoice_id": "inv-b-07", "name": "基本料金", "amount_yen": 5000},
+    {"id": "line-a-07-base", "invoice_id": "inv-a-07", "name": "基本料金", "amount_yen": 5000},
+    {"id": "line-a-06-extra", "invoice_id": "inv-a-06", "name": "追加利用", "amount_yen": 1200}
+  ],
+  "inquiries": [
+    {"id": "inq-07", "related_invoice_id": "inv-a-07", "name": "7月の問い合わせ", "summary": "請求内容についての問い合わせ。請求明細ではない。"}
+  ]
+}
