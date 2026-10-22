@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>請求書の設定</title>
+  <style>
+    body { font: 16px/1.7 sans-serif; max-width: 640px; margin: 32px auto; padding: 0 20px; }
+    section { border: 1px solid #aaa; padding: 24px; }
+    .category { font-size: .9rem; }
+    h2 { margin: 8px 0; }
+    label { display: block; font-weight: bold; }
+    button, input { font: inherit; }
+    output { display: block; margin: 16px 0; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>請求書の設定</h1>
+    <section aria-labelledby="notification-heading">
+      <p class="category">通知設定</p>
+      <h2 id="notification-heading">メール通知</h2>
+      <p>ここではメール通知を設定できます。</p>
+      <form id="notification-form">
+        <label for="invoice-email"><input id="invoice-email" name="invoiceEmail" type="checkbox" checked aria-describedby="notification-rule"> 請求書のメール通知</label>
+        <p id="notification-rule">オンの場合、請求書の初回発行時だけ請求担当者へメールを送ります。再発行時は送りません。オフの場合は初回発行時も送りません。</p>
+        <output id="current-setting" for="invoice-email" aria-live="polite">この試作内の設定：オン</output>
+        <button type="reset">初期状態に戻す</button>
+      </form>
+    </section>
+    <p>設定を変更できるのは、このページを開いている間だけです。メール送信やサーバーへの保存は行いません。</p>
+  </main>
+  <script>
+    const form = document.getElementById('notification-form');
+    const setting = document.getElementById('invoice-email');
+    const current = document.getElementById('current-setting');
+    function renderSetting() {
+      current.textContent = 'この試作内の設定：' + (setting.checked ? 'オン' : 'オフ');
+    }
+    setting.addEventListener('change', renderSetting);
+    form.addEventListener('reset', () => window.setTimeout(renderSetting, 0));
+    form.addEventListener('submit', event => event.preventDefault());
+  </script>
+</body>
+</html>

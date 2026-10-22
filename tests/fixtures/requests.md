@@ -37,3 +37,7 @@
 ## business-operate
 
 `ui-clarity` を使って、`business-hierarchy-source.md` と `business-hierarchy-data.json` を読んでいない運用担当者が、請求内容を把握して必要な対象を選び、詳細を確かめられるローカル閲覧UIを作ってください。問い合わせとの関係や、AIへ変更を相談する対象も分かるようにしてください。成果物は `business-operation.html` に保存してください。
+
+## invoice-notification
+
+`ui-clarity` を使って、`invoice-notification-source.md` を根拠に、AIが作った `invoice-notification.html` を、初めて見る請求担当者が設定内容と操作を理解できるUIへ改善してください。日本語と画面構造を扱えます。仕様と既存動作を保ち、改善したHTMLと確認結果を残してください。
